@@ -7,7 +7,7 @@ This example shows how an app might be styled with TailwindCSS.
 1. Install the Dioxus CLI:
 
 ```bash
-cargo install --git https://github.com/DioxusLabs/cli
+cargo install dioxus-cli
 ```
 
 2. Install npm: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
@@ -81,7 +81,7 @@ watch_path = ["src", "public"]
 [web.resource]
 
 # CSS style file
-style = ["tailwind.css"]
+style = ["/tailwind.css"]
 
 # Javascript code file
 script = []
@@ -122,7 +122,7 @@ npx tailwindcss -i ./input.css -o ./public/tailwind.css --watch
 - Run the following command in the root of the project to start the dioxus dev server:
 
 ```bash
-dioxus serve --hot-reload
+dx serve --hot-reload
 ```
 
 - Open the browser to http://localhost:8080

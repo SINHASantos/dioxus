@@ -15,7 +15,7 @@
 [discord-url]: https://discord.gg/XgGxMSkvUM
 
 [Website](https://dioxuslabs.com) |
-[Guides](https://dioxuslabs.com/docs/0.3/guide/en/) |
+[Guides](https://dioxuslabs.com/learn/0.4/) |
 [API Docs](https://docs.rs/dioxus-fullstack/latest/dioxus_sever) |
 [Chat](https://discord.gg/XgGxMSkvUM)
 
@@ -35,53 +35,28 @@ Full stack Dioxus in under 50 lines of code
 ```rust
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
-use dioxus_fullstack::prelude::*;
 
 fn main() {
-    #[cfg(feature = "web")]
-    dioxus_web::launch_with_props(
-        app,
-        get_root_props_from_document().unwrap_or_default(),
-        dioxus_web::Config::new().hydrate(true),
-    );
-    #[cfg(feature = "ssr")]
-    {
-        tokio::runtime::Runtime::new()
-            .unwrap()
-            .block_on(async move {
-                warp::serve(
-                    // Automatically handles server side rendering, hot reloading intigration, and hosting server functions
-                    serve_dioxus_application(
-                        "",
-                        ServeConfigBuilder::new(app, ()),
-                    )
-                )
-                .run(([127, 0, 0, 1], 8080))
-                .await;
-            });
-    }
+    launch(app)
 }
 
-fn app(cx: Scope) -> Element {
-    let meaning = use_state(cx, || None);
-    cx.render(rsx! {
+fn app() -> Element {
+    let meaning = use_signal(|| None);
+
+    rsx! {
+        h1 { "Meaning of life: {meaning:?}" }
         button {
-            onclick: move |_| {
-                to_owned![meaning];
-                async move {
-                    if let Ok(data) = get_meaning("life the universe and everything".into()).await {
-                        meaning.set(data);
-                    }
+            onclick: move |_| async move {
+                if let Ok(data) = get_meaning("life the universe and everything".into()).await {
+                    meaning.set(data);
                 }
             },
             "Run a server function"
         }
-        "Server said: {meaning:?}"
-    })
+    }
 }
 
-// This code will only run on the server
-#[server(GetMeaning)]
+#[server]
 async fn get_meaning(of: String) -> Result<Option<u32>, ServerFnError> {
     Ok(of.contains("life").then(|| 42))
 }

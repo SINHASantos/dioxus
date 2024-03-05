@@ -29,11 +29,17 @@ pub enum Error {
     #[error("Cargo Error: {0}")]
     CargoError(String),
 
+    #[error("Couldn't retrieve cargo metadata")]
+    CargoMetadata(#[source] cargo_metadata::Error),
+
     #[error("{0}")]
     CustomError(String),
 
     #[error("Invalid proxy URL: {0}")]
     InvalidProxy(#[from] hyper::http::uri::InvalidUri),
+
+    #[error("Failed to establish proxy: {0}")]
+    ProxySetupError(String),
 
     #[error("Error proxying request: {0}")]
     ProxyRequestError(hyper::Error),
@@ -62,6 +68,24 @@ impl From<html_parser::Error> for Error {
 
 impl From<hyper::Error> for Error {
     fn from(e: hyper::Error) -> Self {
+        Self::RuntimeError(e.to_string())
+    }
+}
+
+impl From<dioxus_cli_config::LoadDioxusConfigError> for Error {
+    fn from(e: dioxus_cli_config::LoadDioxusConfigError) -> Self {
+        Self::RuntimeError(e.to_string())
+    }
+}
+
+impl From<dioxus_cli_config::CargoError> for Error {
+    fn from(e: dioxus_cli_config::CargoError) -> Self {
+        Self::CargoError(e.to_string())
+    }
+}
+
+impl From<dioxus_cli_config::CrateConfigError> for Error {
+    fn from(e: dioxus_cli_config::CrateConfigError) -> Self {
         Self::RuntimeError(e.to_string())
     }
 }

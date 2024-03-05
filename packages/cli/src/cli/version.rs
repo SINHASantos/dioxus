@@ -1,6 +1,6 @@
 use super::*;
 
-/// Build the Rust WASM app and all of its assets.
+/// Print the version of this extension
 #[derive(Clone, Debug, Parser)]
 #[clap(name = "version")]
 pub struct Version {}
@@ -49,7 +49,7 @@ impl fmt::Display for VersionInfo {
 
 /// Returns information about cargo's version.
 pub const fn version() -> VersionInfo {
-    let version = match option_env!("CFG_RELEASE") {
+    let version = match option_env!("CARGO_PKG_VERSION") {
         Some(x) => x,
         None => "0.0.0",
     };
